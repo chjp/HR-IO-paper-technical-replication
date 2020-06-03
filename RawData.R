@@ -4,7 +4,6 @@ library(Matrix)
 
 rds = readRDS(file = "/data/riazlab/projects/TCRseq/HRD_seu4_afterTSNE_P80_updated.rds")
 
-class(rds@raw.data)
 counts = rds@raw.data
 
 geneID = dimnames(counts)[[1]]
@@ -98,41 +97,39 @@ dev.off()
 #                                "Nkg7",  "Gzmb",  "Isg15",  "Cd40lg",  "Lag3",  
 #                                "Tnfrsf18",  "Icos",  "Tnfrsf9"),min.cutoff = "q9")
 pdf("/data/riazlab/projects/TCRseq/output/tmp.pdf")
-FeaturePlot(Sdataobj, features = "Cd8a", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Cd4", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Pdcd1", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Il7r", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Ccr7", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Cd28", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Cd8a", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Mki67", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Ly6c1", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Ly6c2", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Tcf7", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Sell", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Nkg7", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Gzmb", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Isg15", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Cd40lg", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Lag3", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Tnfrsf18", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Icos", min.cutoff = "q9")
-FeaturePlot(Sdataobj, features = "Tnfrsf9", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Cd8a", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Cd4", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Pdcd1", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Il7r", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Ccr7", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Cd28", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Cd8a", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Mki67", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Ly6c1", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Ly6c2", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Tcf7", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Sell", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Nkg7", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Gzmb", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Isg15", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Cd40lg", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Lag3", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Tnfrsf18", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Icos", min.cutoff = "q9")
+    FeaturePlot(Sdataobj, features = "Tnfrsf9", min.cutoff = "q9")
 dev.off()
 
 Idents(Sdataobj)
 
 factor(Idents(Sdataobj))
 markers = c("Cd8a", "Cd4", "Il7r", "Ccr7",
-            "Tcf7", "Sell", "Nkg7","Cd44",
-             "S100a4", "Cd14","Lyz2",
-            "Ly6c1",  
-             "Lag3", "Tnfrsf18",
-             "Ifit1", 
-           "Gzmb", "Ms4a1", "Ms4a7","Cst3")
+            "Tcf7", "Sell", "Nkg7", "Cd44",
+            "Cd14", "Lyz2", "Fcgr3", "Itgax", # Fcgr3 is Cd16; Itgax is Cd11c
+            "Ly6c1", "Cd40lg", "Cd79a", "Ncr1",
+            "Lag3", "Ms4a1", "Cst3")
             #"Il7r", "Klf6", "Lef1","Ass1",  "Ly6c2","Stat1", "Pdcd1","Ccr7", "Cd28", "Mki67",  "Gzmb", "Isg15", "Cd40lg", "Icos", "Tnfrsf9")
 
-pdf("/data/riazlab/projects/TCRseq/output/Cluster_markers.pdf")
+pdf("/data/riazlab/projects/TCRseq/output/Cluster_markers.v01.pdf")
 DotPlot(Sdataobj, features = rev(markers), cols = c("blue", "red"), dot.scale = 8) + RotatedAxis()
 dev.off()
 
