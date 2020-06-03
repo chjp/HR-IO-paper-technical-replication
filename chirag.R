@@ -41,12 +41,10 @@ FeaturePlot(rds3, features = "Cd4", min.cutoff = "q9")
 dev.off()
 
 markers = c("Cd8a", "Cd4", "Il7r", "Ccr7",
-            "Tcf7", "Sell", "Nkg7","Cd44",
-             "S100a4", "Cd14","Lyz2",
-            "Ly6c1",  
-             "Lag3", "Tnfrsf18",
-             "Ifit1", 
-           "Gzmb", "Ms4a1", "Ms4a7","Cst3")
-pdf("/data/riazlab/projects/TCRseq/output/chirag/DotPlot.pdf")
+            "Tcf7", "Sell", "Nkg7", "Cd44",
+            "Cd14", "Lyz2", "Fcgr3", "Itgax", # Fcgr3 is Cd16; Itgax is Cd11c
+            "Ly6c1", "Cd40lg", "Cd79a", "Ncr1",
+            "Lag3", "Ms4a1", "Cst3")
+pdf("/data/riazlab/projects/TCRseq/output/chirag/DotPlot.v01.pdf")
 DotPlot(rds3, features = rev(markers), cols = c("blue", "red"), dot.scale = 8) + RotatedAxis()
 dev.off()
