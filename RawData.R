@@ -2,13 +2,12 @@ library(Seurat)
 library(dplyr)
 library(Matrix)
 
-rds = readRDS(file = "/data/riazlab/projects/TCRseq/HRD_seu4_afterTSNE_P80_updated.rds")
-
+rds = readRDS(file = "/data/riazlab/projects/TCRseq/Input/HRD_seu4_afterTSNE_P80_updated.rds")
 counts = rds@raw.data
 
+##### change ensemble ID to gene name #####
 geneID = dimnames(counts)[[1]]
 geneID = as.data.frame(geneID)
-which(duplicated(geneID))
 colnames(geneID)="ID"
 library("biomaRt")
 ensembl <- useMart("ensembl", dataset="mmusculus_gene_ensembl")
@@ -17,10 +16,7 @@ ID2name <- getBM(attributes=c('ensembl_gene_id','external_gene_name'),
              filters = 'ensembl_gene_id',
              values = geneID,
              mart = ensembl)
-which(duplicated(ID2name$external_gene_name))
 
-#ID2name = merge(geneID, ID2name, by.x = "ID", by.y = "ensembl_gene_id", all.x = T)
-#ID2name[which(is.na(ID2name[,2])),2] = ID2name[which(is.na(ID2name[,2])),1] 
 colnames(ID2name) = c("ID","GeneName")
 library(plyr)
 ID2name = join(geneID, ID2name, by = "ID", type = "left", match = "all")
@@ -29,6 +25,10 @@ ID2name[which(duplicated(ID2name$GeneName)),]
 ID2name[which(is.na(ID2name$GeneName)),2] = ID2name[which(is.na(ID2name$GeneName)),1]
 which(duplicated(ID2name$GeneName))
 dimnames(counts)[[1]] = ID2name$GeneName
+##### change ensemble ID to gene name #####
+
+##### Batch correction #####
+##### Batch correction #####
 
 Sdataobj = CreateSeuratObject(counts = counts)
 object.size(Sdataobj)
@@ -54,7 +54,7 @@ top10 <- head(VariableFeatures(Sdataobj), 10)
 pdf("/data/riazlab/projects/TCRseq/output/SigFeatures.pdf", width = 14)
 plot1 <- VariableFeaturePlot(Sdataobj)
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
-plot1 + plot2
+  plot2
 dev.off()
 
 # Scaling the data
@@ -139,13 +139,9 @@ DoHeatmap(subset(Sdataobj, downsample = 100),
     size = 3)
 dev.off()
 pdf("/data/riazlab/projects/TCRseq/output/Violin.pdf")
-VlnPlot(Sdataobj, features = c("Cd14"), pt.size = 0.1)
-VlnPlot(Sdataobj, features = c("Cd33"), pt.size = 0.1) # Myeloid cell surface antigen CD33
-VlnPlot(Sdataobj, features = c("Cd3d"), pt.size = 0.1) # arrested T cell differentiation
-VlnPlot(Sdataobj, features = c("Cd79a"), pt.size = 0.1)
-VlnPlot(Sdataobj, features = c("Ncr1"), pt.size = 0.1) # Cd335/ NKp46 NK cell
+    VlnPlot(Sdataobj, features = c("Cd14"), pt.size = 0.1)
+    VlnPlot(Sdataobj, features = c("Cd33"), pt.size = 0.1) # Myeloid cell surface antigen CD33
+    VlnPlot(Sdataobj, features = c("Cd3d"), pt.size = 0.1) # arrested T cell differentiation
+    VlnPlot(Sdataobj, features = c("Cd79a"), pt.size = 0.1)
+    VlnPlot(Sdataobj, features = c("Ncr1"), pt.size = 0.1) # Cd335/ NKp46 NK cell
 dev.off()
-
-geneName = dimnames(Sdataobj@assays$RNA)[[1]]
-ind = grep(dimnames(Sdataobj@assays$RNA)[[1]], pattern = "fce", ignore.case = T)
-geneName[ind]
