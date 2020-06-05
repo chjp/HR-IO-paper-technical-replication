@@ -1,3 +1,4 @@
+#  .libPaths(c("/opt/common/CentOS_7/R/R-3.5.1/lib64/R/library", .libPaths()))
 library(Seurat)
 library(dplyr)
 library(Matrix)
@@ -6,28 +7,52 @@ rds = readRDS(file = "/data/riazlab/projects/TCRseq/Input/HRD_seu4_afterTSNE_P80
 counts = rds@raw.data
 
 ##### change ensemble ID to gene name #####
-geneID = dimnames(counts)[[1]]
-geneID = as.data.frame(geneID)
-colnames(geneID)="ID"
-library("biomaRt")
-ensembl <- useMart("ensembl", dataset="mmusculus_gene_ensembl")
+#geneID = dimnames(counts)[[1]]
+#geneID = as.data.frame(geneID)
+#colnames(geneID)="ID"
+#library("biomaRt")
+#ensembl <- useMart("ensembl", dataset="mmusculus_gene_ensembl")
 #saveRDS(ensembl, "/data/projects/TCRseq/output/MmusculusENSEMBL.rds")
-ID2name <- getBM(attributes=c('ensembl_gene_id','external_gene_name'),
-             filters = 'ensembl_gene_id',
-             values = geneID,
-             mart = ensembl)
+#ID2name <- getBM(attributes=c('ensembl_gene_id','external_gene_name'),
+#             filters = 'ensembl_gene_id',
+#             values = geneID,
+#             mart = ensembl)
 
-colnames(ID2name) = c("ID","GeneName")
-library(plyr)
-ID2name = join(geneID, ID2name, by = "ID", type = "left", match = "all")
-which(duplicated(ID2name$GeneName))
-ID2name[which(duplicated(ID2name$GeneName)),]
-ID2name[which(is.na(ID2name$GeneName)),2] = ID2name[which(is.na(ID2name$GeneName)),1]
-which(duplicated(ID2name$GeneName))
+#colnames(ID2name) = c("ID","GeneName")
+#library(plyr)
+#ID2name = join(geneID, ID2name, by = "ID", type = "left", match = "all")
+#which(duplicated(ID2name$GeneName))
+#ID2name[which(duplicated(ID2name$GeneName)),]
+#ID2name[which(is.na(ID2name$GeneName)),2] = ID2name[which(is.na(ID2name$GeneName)),1]
+#which(duplicated(ID2name$GeneName))
+
+ID2name = readRDS("/data/riazlab/projects/TCRseq/Input/ID2name.rds")
 dimnames(counts)[[1]] = ID2name$GeneName
 ##### change ensemble ID to gene name #####
-
+saveRDS(counts, file="~/tmp.rds")
+counts = readRDS("~/tmp.rds")
 ##### Batch correction #####
+barcodes = dimnames(counts)[[2]]
+unique(substr(barcodes,20,25)) # BRCA1 mut and BRCA2 mut: 17QQ and 21EE
+    # Seperate qseudo batches (individual experimental replicates)
+    C17QQ2 = counts[,grepl("17QQ2", barcodes)]
+    C17QQ3 = counts[,grepl("17QQ3", barcodes)]
+
+    C21E1 = counts[,grepl("21E1", barcodes)]
+    C21E2 = counts[,grepl("21E2", barcodes)]
+    C21E3 = counts[,grepl("21E3", barcodes)]
+
+    CPAR1 = counts[,grepl("PAR1", barcodes)]
+    CPAR2 = counts[,grepl("PAR2", barcodes)]
+    CPAR3 = counts[,grepl("PAR3", barcodes)]
+
+library(batchelor)
+fastMNNcorr = fastMNN(C17QQ2,C17QQ3,C21E1,C21E2,C21E3,CPAR1,CPAR2,CPAR3)
+MNNcorr = mnnCorrect(C17QQ2,C17QQ3,C21E1,C21E2,C21E3,CPAR1,CPAR2,CPAR3)
+
+#saveRDS(object=out, file="/data/riazlab/projects/TCRseq/output/MNNcorrect.rds")
+#out=readRDS("/data/riazlab/projects/TCRseq/output/MNNcorrect.rds")
+#RunPCA(object=out)
 ##### Batch correction #####
 
 Sdataobj = CreateSeuratObject(counts = counts)
