@@ -10,19 +10,19 @@ ID2name = readRDS("/data/riazlab/projects/TCRseq/Input/ID2name.rds")
 dimnames(counts)[[1]] = ID2name$GeneName
 rds = CreateSeuratObject(counts = counts)
 
-#rds <- NormalizeData(rds)
+rds <- NormalizeData(rds)
 
-#rds <- FindVariableFeatures(rds)
-##### Batch correction #####
-#rds@meta.data$Experiment = substr(rownames(rds@meta.data),20,25)
-#library(SeuratWrappers)
-#rds <- RunFastMNN(object.list = SplitObject(rds, split.by = "Experiment"))
-#saveRDS(rds, file="/data/riazlab/projects/TCRseq/output/fastMNNcorrect.rds")
-##### Batch correction #####
+rds <- FindVariableFeatures(rds)
+#### Batch correction #####
+rds@meta.data$Experiment = substr(rownames(rds@meta.data),20,25)
+library(SeuratWrappers)
+rds <- RunFastMNN(object.list = SplitObject(rds, split.by = "Experiment"))
+saveRDS(rds, file="/data/riazlab/projects/TCRseq/output/fastMNNcorrect.rds")
+#### Batch correction #####
 
 Sdataobj = rds
 Sdataobj[["percent.mt"]] <- PercentageFeatureSet(Sdataobj, pattern = "^mt-")
-pdf("/data/riazlab/projects/TCRseq/output/QC.v00.pdf",
+pdf("/data/riazlab/projects/TCRseq/output/QC.v01.pdf",
     width = 21,
     height = 7)
 VlnPlot(Sdataobj, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
@@ -38,7 +38,7 @@ Sdataobj <- FindVariableFeatures(Sdataobj, selection.method = "vst", nfeatures =
 # Identify the 10 most highly variable genes
 top10 <- head(VariableFeatures(Sdataobj), 10)
 # plot variable features with and without labels
-pdf("/data/riazlab/projects/TCRseq/output/SigFeatures.v00.pdf", width = 14)
+pdf("/data/riazlab/projects/TCRseq/output/SigFeatures.v01.pdf", width = 14)
 plot1 <- VariableFeaturePlot(Sdataobj)
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
   plot2
@@ -50,25 +50,25 @@ Sdataobj <- ScaleData(Sdataobj, features = all.genes)
 Sdataobj <- RunPCA(Sdataobj, features = VariableFeatures(object = Sdataobj))
 
 
-pdf("/data/riazlab/projects/TCRseq/output/PCgenes.v00.pdf", width = 9)
+pdf("/data/riazlab/projects/TCRseq/output/PCgenes.v01.pdf", width = 9)
 VizDimLoadings(Sdataobj, dims = 1:2, reduction = "pca")
 dev.off()
 Sdataobj <- RunUMAP(Sdataobj, reduction = "pca", dims = 1:20)
 Sdataobj <- FindNeighbors(object = Sdataobj, reduction = "pca", dims = 1:20)
 Sdataobj <- FindClusters(object = Sdataobj, resolution = 1)
 
-pdf("/data/riazlab/projects/TCRseq/output/umap.v00.pdf")
+pdf("/data/riazlab/projects/TCRseq/output/umap.v01.pdf")
 DimPlot(Sdataobj, reduction = "umap", label = TRUE)
 dev.off()
 
 Sdataobj <- RunTSNE(object = Sdataobj, dims=1:20)
-pdf("/data/riazlab/projects/TCRseq/output/tsne.v00.pdf")
+pdf("/data/riazlab/projects/TCRseq/output/tsne.v01.pdf")
 DimPlot(Sdataobj, reduction = "tsne", label = T)
 dev.off()
 
 
 #lable
-pdf("/data/riazlab/projects/TCRseq/output/MarkerTsne.v00.pdf")
+pdf("/data/riazlab/projects/TCRseq/output/MarkerTsne.v01.pdf")
     FeaturePlot(Sdataobj, features = "Cd8a", min.cutoff = "q9")
     FeaturePlot(Sdataobj, features = "Cd4", min.cutoff = "q9")
     FeaturePlot(Sdataobj, features = "Pdcd1", min.cutoff = "q9")
@@ -90,26 +90,27 @@ pdf("/data/riazlab/projects/TCRseq/output/MarkerTsne.v00.pdf")
     FeaturePlot(Sdataobj, features = "Tnfrsf9", min.cutoff = "q9")
 dev.off()
 
-#markers = c("Cd8a", "Cd4", "Il7r", "Ccr7",
-#            "Tcf7", "Sell", "Nkg7", "Cd44",
-#            "Cd14", "Lyz2", "Fcgr3", "Itgax", # Fcgr3 is Cd16; Itgax is Cd11c
-#            "Ly6c1", "Cd40lg", "Cd79a", "Ncr1",
-#            "Lag3", "Ms4a1", "Cst3")
-#            #"Il7r", "Klf6", "Lef1","Ass1",  "Ly6c2","Stat1", "Pdcd1","Ccr7", "Cd28", "Mki67",  "Gzmb", "Isg15", "Cd40lg", "Icos", "Tnfrsf9")
-#
-#pdf("/data/riazlab/projects/TCRseq/output/Cluster_markers.v01.pdf")
-#DotPlot(Sdataobj, features = rev(markers), cols = c("blue", "red"), dot.scale = 8) + RotatedAxis()
-#dev.off()
+markers = c("Cd8a", "Cd4", "Il7r", "Ccr7",
+            "Tcf7", "Sell", "Nkg7", "Cd44",
+            "Cd14", "Lyz2", "Fcgr3", "Itgax", # Fcgr3 is Cd16; Itgax is Cd11c
+            "Ly6c1", "Cd40lg", "Cd79a", "Ncr1",
+            "Lag3", "Ms4a1", "Cst3")
+            #"Il7r", "Klf6", "Lef1","Ass1",  "Ly6c2","Stat1", "Pdcd1","Ccr7", "Cd28", "Mki67",  "Gzmb", "Isg15", "Cd40lg", "Icos", "Tnfrsf9")
+
+pdf("/data/riazlab/projects/TCRseq/output/Cluster_markers.v02.pdf")
+DotPlot(Sdataobj, features = rev(markers), cols = c("blue", "red"), dot.scale = 8) + RotatedAxis()
+dev.off()
 #
 #pdf("/data/riazlab/projects/TCRseq/output/Heatmap.pdf")
 #DoHeatmap(subset(Sdataobj, downsample = 100), 
 #    features = c("Cd4","Cd8a","S100a6","Acp5","Tubb5","Gramd3","St8sia6","Nkg7","Reep5","Crip1","B4galnt1","G0s2","Psen2","Gata3","H3f3b","Cmah","Igfbp4","Chd3"), 
 #    size = 3)
 #dev.off()
-#pdf("/data/riazlab/projects/TCRseq/output/Violin.pdf")
-#    VlnPlot(Sdataobj, features = c("Cd14"), pt.size = 0.1)
-#    VlnPlot(Sdataobj, features = c("Cd33"), pt.size = 0.1) # Myeloid cell surface antigen CD33
-#    VlnPlot(Sdataobj, features = c("Cd3d"), pt.size = 0.1) # arrested T cell differentiation
-#    VlnPlot(Sdataobj, features = c("Cd79a"), pt.size = 0.1)
-#    VlnPlot(Sdataobj, features = c("Ncr1"), pt.size = 0.1) # Cd335/ NKp46 NK cell
-#dev.off()
+
+pdf("/data/riazlab/projects/TCRseq/output/Violin.v01.pdf")
+    VlnPlot(Sdataobj, features = c("Cd14"), pt.size = 0.1)
+    VlnPlot(Sdataobj, features = c("Cd33"), pt.size = 0.1) # Myeloid cell surface antigen CD33
+    VlnPlot(Sdataobj, features = c("Cd3d"), pt.size = 0.1) # arrested T cell differentiation
+    VlnPlot(Sdataobj, features = c("Cd79a"), pt.size = 0.1)
+    VlnPlot(Sdataobj, features = c("Ncr1"), pt.size = 0.1) # Cd335/ NKp46 NK cell
+dev.off()
