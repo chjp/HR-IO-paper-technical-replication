@@ -29,8 +29,9 @@ counts = rds@raw.data
 ID2name = readRDS("/data/riazlab/projects/TCRseq/Input/ID2name.rds")
 dimnames(counts)[[1]] = ID2name$GeneName
 ##### change ensemble ID to gene name #####
-saveRDS(counts, file="~/tmp.rds")
-counts = readRDS("~/tmp.rds")
+#saveRDS(counts, file="~/tmp.rds")
+#counts = readRDS("~/tmp.rds")
+
 ##### Batch correction #####
 barcodes = dimnames(counts)[[2]]
 unique(substr(barcodes,20,25)) # BRCA1 mut and BRCA2 mut: 17QQ and 21EE
@@ -48,13 +49,15 @@ unique(substr(barcodes,20,25)) # BRCA1 mut and BRCA2 mut: 17QQ and 21EE
 
 library(batchelor)
 fastMNNcorr = fastMNN(C17QQ2,C17QQ3,C21E1,C21E2,C21E3,CPAR1,CPAR2,CPAR3)
-MNNcorr = mnnCorrect(C17QQ2,C17QQ3,C21E1,C21E2,C21E3,CPAR1,CPAR2,CPAR3)
+saveRDS(object=fastMNNcorr, file="/data/riazlab/projects/TCRseq/output/fastMNNcorrect.rds")
 
-#saveRDS(object=out, file="/data/riazlab/projects/TCRseq/output/MNNcorrect.rds")
-#out=readRDS("/data/riazlab/projects/TCRseq/output/MNNcorrect.rds")
+	# mnnCorrect took too long: at least 24 hours
+	#MNNcorr = mnnCorrect(C17QQ2,C17QQ3,C21E1,C21E2,C21E3,CPAR1,CPAR2,CPAR3)
+	#saveRDS(object=MNNcorr, file="/data/riazlab/projects/TCRseq/output/MNNcorrect.rds")
 #RunPCA(object=out)
 ##### Batch correction #####
 
+counts=readRDS("/data/riazlab/projects/TCRseq/output/fastMNNcorrect.rds")
 Sdataobj = CreateSeuratObject(counts = counts)
 object.size(Sdataobj)
 Sdataobj[["percent.mt"]] <- PercentageFeatureSet(Sdataobj, pattern = "^mt-")
