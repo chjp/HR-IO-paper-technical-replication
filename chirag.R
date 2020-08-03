@@ -70,7 +70,7 @@ dev.off()
 myloid_cells <- SubsetData(object = rds3, ident.use = c(8,10,11), do.clean = TRUE, do.scale = TRUE)
 myloid_cells = CreateSeuratObject(counts=myloid_cells@assays$RNA@counts)
 saveRDS(myloid_cells, file="/data/riazlab/projects/TCRseq/output/chirag/MyloidCluster.rds")
-myloid_cells=readRDS("/data/riazlab/projects/TCRseq/output/chirag/MyloidCluster.rds")
+
 myloid_cells <- FindVariableFeatures(myloid_cells, selection.method = "vst", nfeatures = 2000)
 
 top100 <- head(VariableFeatures(myloid_cells), 100)
@@ -87,16 +87,16 @@ myloid_cells <- RunPCA(myloid_cells, features = VariableFeatures(object = myloid
 pdf("/data/riazlab/projects/TCRseq/output/chirag/PCgenes.v00.pdf", width = 9)
 VizDimLoadings(myloid_cells, dims = 1:2, reduction = "pca")
 dev.off()
-myloid_cells <- FindNeighbors(object = myloid_cells, reduction = "pca", dims = 1:10)
-myloid_cells <- FindClusters(object = myloid_cells, resolution = 0.8)
+myloid_cells <- FindNeighbors(object = myloid_cells, reduction = "pca", dims = 1:20)
+myloid_cells <- FindClusters(object = myloid_cells, resolution = 1)
 
 
-myloid_cells <- RunTSNE(object = myloid_cells, dims=1:10)
-pdf("/data/riazlab/projects/TCRseq/output/chirag/tsne.v02.pdf")
+myloid_cells <- RunTSNE(object = myloid_cells, dims=1:20)
+pdf("/data/riazlab/projects/TCRseq/output/chirag/tsne.v01.pdf")
 DimPlot(myloid_cells, reduction = "tsne", label = T)
 dev.off()
 
-pdf("/data/riazlab/projects/TCRseq/output/chirag/Violin.v02.pdf")
+pdf("/data/riazlab/projects/TCRseq/output/chirag/Violin.v01.pdf")
   VlnPlot(myloid_cells, features = c("Cd14"), pt.size = 0.1)
   VlnPlot(myloid_cells, features = c("Cd160"), pt.size = 0.1) # see all.genes[grep(all.genes, pattern="Cd16")]
   VlnPlot(myloid_cells, features = c("Fcgr3"), pt.size = 0.1) # Synonymous of Cd16
@@ -110,7 +110,7 @@ markers = c("Msr1", "Mrc1", "Arg1", "Nos2", # Cd206=Mrc1 Cd204=Msr1
             "Mmp8", "Itgae", "Itga1", "Il1b",
             "Ifitm1", "Ifitm3", "Isg15", "Clec4e",
             "Stat1", "Txnip", "Irf8", "Ccl3")
-pdf("/data/riazlab/projects/TCRseq/output/chirag/DotPlot.v03.pdf")
+pdf("/data/riazlab/projects/TCRseq/output/chirag/DotPlot.v02.pdf")
 DotPlot(rds3, features = rev(markers), cols = c("blue", "red"), dot.scale = 8) + RotatedAxis()
 dev.off()
 #### re-cluster myloid cells ####
