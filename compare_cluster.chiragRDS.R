@@ -53,12 +53,21 @@ clusters = data.frame(gene=rownames(avg.c1), c1=avg.c1, c3=avg.c3, c4=avg.c4, c5
 colnames(clusters) = c("gene", "c1", "c3", "c4", "c5")
 
 SuppTable26 = read.csv("/data/riazlab/projects/TCRseq/Input/Supplementary_Table_26.csv", sep=",")
-genes_focus = unique(as.character(SuppTable26$V2))
+#genes_focus = unique(as.character(SuppTable26$V2))
+genes_focus = c("Isg15","Ifit3","Gbp7","Usp18","Irf7","Irf1","Gbp4","Gbp2","Stat1",
+                "Ccr9","Macf1"
+)
 
 clusters = clusters[clusters$gene %in% genes_focus,]
 library(pheatmap)
-pdf("/data/riazlab/projects/TCRseq/output/chirag/Fig5d.v00.pdf", height=1000)
+pdf("/data/riazlab/projects/TCRseq/output/chirag/Fig5d.v01.pdf")
 pheatmap(clusters[,c(2,3,4,5)], scale = "column",
+         cluster_rows = T, cluster_cols = T,
+         show_rownames = T
+)
+dev.off()
+pdf("/data/riazlab/projects/TCRseq/output/chirag/Fig5d.v02.pdf")
+pheatmap(clusters[,c(2,3,4,5)], scale = "row",
          cluster_rows = T, cluster_cols = T,
          show_rownames = T
 )
