@@ -1,10 +1,9 @@
-
 library(Seurat)
 library(dplyr)
 library(Matrix)
 #install.packages("batchelor")
 
-rds = readRDS(file = "/data/riazlab/projects/TCRseq/Input/sc_HRD_with_batch_updated.rds")
+rds = readRDS(file = "/data/lab/projects/TCRseq/Input/sc_HRD_with_batch_updated.rds")
 #str(rds)
 rds3=UpdateSeuratObject(rds)
 rds3[["percent.mt"]] = PercentageFeatureSet(rds3, pattern = "^mt-")
@@ -48,9 +47,6 @@ which(duplicated(ID2name$GeneName))
 dimnames(counts)[[1]] = ID2name$GeneName
 ##### change gene ID to gene name. #####
 
-
-
-
 #rds3norml <- NormalizeData(rds3, normalization.method = "LogNormalize", scale.factor = 10000)
 #counts1 = rds3norml@assays$RNA@counts
 barcodes = dimnames(counts)[[2]]
@@ -69,8 +65,8 @@ str(CPAR3)
 
 library(batchelor)
 #out = fastMNN(C17QQ2,C17QQ3,C21E1,C21E2,C21E3,CPAR1,CPAR2,CPAR3)
-#saveRDS(object=out, file="/data/riazlab/projects/TCRseq/output/MNNcorrect.rds")
-#out=readRDS("/data/riazlab/projects/TCRseq/output/MNNcorrect.rds")
+#saveRDS(object=out, file="/data/lab/projects/TCRseq/output/MNNcorrect.rds")
+#out=readRDS("/data/lab/projects/TCRseq/output/MNNcorrect.rds")
 #RunPCA(object=out)
 rm(rds3,rds,counts)
 #summary(out)
@@ -86,8 +82,8 @@ rm(rds3,rds,counts)
 
 
 Sdataobj <- CreateSeuratObject(counts = out@assays@data@listData$reconstructed)
-saveRDS(Sdataobj, file="/data/riazlab/projects/TCRseq/output/tmp.rds")
-#Sdataobj = readRDS(file="/data/riazlab/projects/TCRseq/output/tmp.rds")
+saveRDS(Sdataobj, file="/data/lab/projects/TCRseq/output/tmp.rds")
+#Sdataobj = readRDS(file="/data/lab/projects/TCRseq/output/tmp.rds")
 Sdataobj <- FindVariableFeatures(Sdataobj, selection.method = "vst", nfeatures = 2000)
 
 #https://www.rdocumentation.org/packages/Seurat/versions/3.1.4/topics/RunTSNE
@@ -96,7 +92,7 @@ Sdataobj <- ScaleData(Sdataobj, features = all.genes)
 Sdataobj <- RunPCA(Sdataobj, features = VariableFeatures(object = Sdataobj))
 #Sdataobj <- JackStraw(Sdataobj, num.replicate = 100)
 #Sdataobj <- ScoreJackStraw(Sdataobj, dims = 1:20)
-#pdf("/data/riazlab/projects/TCRseq/output/JackStraw.fastMNN.pdf")
+#pdf("/data/lab/projects/TCRseq/output/JackStraw.fastMNN.pdf")
 #JackStrawPlot(Sdataobj, dims = 1:20)
 #dev.off()
 
@@ -104,22 +100,22 @@ Sdataobj <- RunPCA(Sdataobj, features = VariableFeatures(object = Sdataobj))
 Sdataobj <- FindNeighbors(Sdataobj, dims = 1:20)
 Sdataobj <- FindClusters(Sdataobj, resolution = 1)
 Sdataobj = RunTSNE(Sdataobj, dims = 1:20)
-pdf("/data/riazlab/projects/TCRseq/output/tsne.fastMNN.pdf")
+pdf("/data/lab/projects/TCRseq/output/tsne.fastMNN.pdf")
 DimPlot(Sdataobj, reduction = "tsne", label = T)
 dev.off()
-pdf("/data/riazlab/projects/TCRseq/output/pca.fastMNN.pdf")
+pdf("/data/lab/projects/TCRseq/output/pca.fastMNN.pdf")
 DimPlot(Sdataobj, reduction = "pca")
 dev.off()
 
 
-pdf("/data/riazlab/projects/TCRseq/output/CD8a.BC.pdf")
+pdf("/data/lab/projects/TCRseq/output/CD8a.BC.pdf")
 FeaturePlot(Sdataobj, features = "ENSMUSG00000053977", min.cutoff = "q9")
 dev.off()
-pdf("/data/riazlab/projects/TCRseq/output/CD4.BC.pdf")
+pdf("/data/lab/projects/TCRseq/output/CD4.BC.pdf")
 FeaturePlot(Sdataobj, features = "ENSMUSG00000023274", min.cutoff = "q9")
 dev.off()
 
 features = c("ENSMUSG00000041959","ENSMUSG00000050592")
-pdf("/data/riazlab/projects/TCRseq/output/heatmap.pdf")
+pdf("/data/lab/projects/TCRseq/output/heatmap.pdf")
 DoHeatmap(subset(Sdataobj, downsample = 10), features = features, size = 3)
 dev.off()

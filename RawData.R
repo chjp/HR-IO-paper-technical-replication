@@ -3,10 +3,10 @@ library(Seurat)
 library(dplyr)
 library(Matrix)
 
-rds = readRDS(file = "/data/riazlab/projects/TCRseq/Input/HRD_seu4_afterTSNE_P80_updated.rds")
+rds = readRDS(file = "/data/lab/projects/TCRseq/Input/HRD_seu4_afterTSNE_P80_updated.rds")
 counts = rds@raw.data
 ##### change ensemble ID to gene name #####
-ID2name = readRDS("/data/riazlab/projects/TCRseq/Input/ID2name.rds")
+ID2name = readRDS("/data/lab/projects/TCRseq/Input/ID2name.rds")
 dimnames(counts)[[1]] = ID2name$GeneName
 rds = CreateSeuratObject(counts = counts)
 rds <- NormalizeData(rds)
@@ -15,12 +15,12 @@ rds <- FindVariableFeatures(rds)
 rds@meta.data$Experiment = substr(rownames(rds@meta.data),20,25)
 library(SeuratWrappers)
 rds <- RunFastMNN(object.list = SplitObject(rds, split.by = "Experiment"))
-#saveRDS(rds, file="/data/riazlab/projects/TCRseq/output/fastMNNcorrect.rds")
+#saveRDS(rds, file="/data/lab/projects/TCRseq/output/fastMNNcorrect.rds")
 #### Batch correction #####
 
 Sdataobj = rds
 Sdataobj[["percent.mt"]] <- PercentageFeatureSet(Sdataobj, pattern = "^mt-")
-pdf("/data/riazlab/projects/TCRseq/output/QC.v01.pdf",
+pdf("/data/lab/projects/TCRseq/output/QC.v01.pdf",
     width = 21,
     height = 7)
 VlnPlot(Sdataobj, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
@@ -36,7 +36,7 @@ Sdataobj <- FindVariableFeatures(Sdataobj, selection.method = "vst", nfeatures =
 # Identify the 10 most highly variable genes
 top10 <- head(VariableFeatures(Sdataobj), 10)
 # plot variable features with and without labels
-pdf("/data/riazlab/projects/TCRseq/output/SigFeatures.v01.pdf", width = 14)
+pdf("/data/lab/projects/TCRseq/output/SigFeatures.v01.pdf", width = 14)
 plot1 <- VariableFeaturePlot(Sdataobj)
 plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
 plot2
@@ -48,25 +48,25 @@ Sdataobj <- ScaleData(Sdataobj, features = all.genes)
 Sdataobj <- RunPCA(Sdataobj, features = VariableFeatures(object = Sdataobj))
 
 
-pdf("/data/riazlab/projects/TCRseq/output/PCgenes.v01.pdf", width = 9)
+pdf("/data/lab/projects/TCRseq/output/PCgenes.v01.pdf", width = 9)
 VizDimLoadings(Sdataobj, dims = 1:2, reduction = "pca")
 dev.off()
 Sdataobj <- RunUMAP(Sdataobj, reduction = "pca", dims = 1:20)
 Sdataobj <- FindNeighbors(object = Sdataobj, reduction = "pca", dims = 1:20)
 Sdataobj <- FindClusters(object = Sdataobj, resolution = 1)
 
-pdf("/data/riazlab/projects/TCRseq/output/umap.v01.pdf")
+pdf("/data/lab/projects/TCRseq/output/umap.v01.pdf")
 DimPlot(Sdataobj, reduction = "umap", label = TRUE)
 dev.off()
 
 Sdataobj <- RunTSNE(object = Sdataobj, dims=1:20)
-pdf("/data/riazlab/projects/TCRseq/output/tsne.v01.pdf")
+pdf("/data/lab/projects/TCRseq/output/tsne.v01.pdf")
 DimPlot(Sdataobj, reduction = "tsne", label = T)
 dev.off()
 
 
 #lable
-pdf("/data/riazlab/projects/TCRseq/output/MarkerTsne.v02.pdf")
+pdf("/data/lab/projects/TCRseq/output/MarkerTsne.v02.pdf")
     FeaturePlot(Sdataobj, reduction="tsne", features = "Cd8a", min.cutoff = "q9")
     FeaturePlot(Sdataobj, reduction="tsne", features = "Cd4", min.cutoff = "q9")
     FeaturePlot(Sdataobj, reduction="tsne", features = "Pdcd1", min.cutoff = "q9")
@@ -95,17 +95,17 @@ markers = c("Cd8a", "Cd4", "Il7r", "Ccr7",
             "Lag3", "Ms4a1", "Cst3")
             #"Il7r", "Klf6", "Lef1","Ass1",  "Ly6c2","Stat1", "Pdcd1","Ccr7", "Cd28", "Mki67",  "Gzmb", "Isg15", "Cd40lg", "Icos", "Tnfrsf9")
 
-pdf("/data/riazlab/projects/TCRseq/output/Cluster_markers.v02.pdf")
+pdf("/data/lab/projects/TCRseq/output/Cluster_markers.v02.pdf")
 DotPlot(Sdataobj, features = rev(markers), cols = c("blue", "red"), dot.scale = 8) + RotatedAxis()
 dev.off()
 #
-#pdf("/data/riazlab/projects/TCRseq/output/Heatmap.pdf")
+#pdf("/data/lab/projects/TCRseq/output/Heatmap.pdf")
 #DoHeatmap(subset(Sdataobj, downsample = 100), 
 #    features = c("Cd4","Cd8a","S100a6","Acp5","Tubb5","Gramd3","St8sia6","Nkg7","Reep5","Crip1","B4galnt1","G0s2","Psen2","Gata3","H3f3b","Cmah","Igfbp4","Chd3"), 
 #    size = 3)
 #dev.off()
 
-pdf("/data/riazlab/projects/TCRseq/output/Violin.v01.pdf")
+pdf("/data/lab/projects/TCRseq/output/Violin.v01.pdf")
     VlnPlot(Sdataobj, features = c("Cd14"), pt.size = 0.1)
     VlnPlot(Sdataobj, features = c("Cd33"), pt.size = 0.1) # Myeloid cell surface antigen CD33
     VlnPlot(Sdataobj, features = c("Cd3d"), pt.size = 0.1) # arrested T cell differentiation
@@ -125,7 +125,7 @@ Sdataobj2 <- RenameIdents(object = Sdataobj,
     '19' = 'Ambiguous3', '20' = 'Ambiguous4', '21' = 'Ambiguous5', 
     '22' = '? Cd79a+ Ly6c1+', '23' = 'Cd79a+ B cells 2')
 levels(x = Sdataobj2)
-pdf("/data/riazlab/projects/TCRseq/output/tsne.lable.v00.pdf", width = 13)
+pdf("/data/lab/projects/TCRseq/output/tsne.lable.v00.pdf", width = 13)
 DimPlot(Sdataobj2, reduction = "tsne", label = T)
 dev.off()
 
@@ -142,7 +142,7 @@ avg.c4 <- log1p(AverageExpression(Cd4Tcell4, verbose = FALSE)$RNA)
 clusters = data.frame(gene=rownames(avg.c1), c1=avg.c1, c3=avg.c2, c4=avg.c3, c5=avg.c4)
 colnames(clusters) = c("gene", "c1", "c2", "c3", "c4")
 
-#SuppTable26 = read.csv("/data/riazlab/projects/TCRseq/Input/Supplementary_Table_26.csv", sep=",")
+#SuppTable26 = read.csv("/data/lab/projects/TCRseq/Input/Supplementary_Table_26.csv", sep=",")
 genes_focus = c("Macf1", "Cd55", "Fam78a", "Emp3", "S1pr1", "Jun", "Selenop", "Il6ra", "Ppp1r15a", 
                 "Tspan32", "St8sia6", "Ccr7", "Foxp1", "Actn1", "Tcf7", "Lef1", "Igfbp4", "Nacc2", 
                 "Tgfbr3", "Pdlim4", "Itm2a", "Ass1", "Cd40lg", "Cd4", "Zbtb7b", "Klf6", "Isg15", 
@@ -150,7 +150,7 @@ genes_focus = c("Macf1", "Cd55", "Fam78a", "Emp3", "S1pr1", "Jun", "Selenop", "I
 clusters = clusters[clusters$gene %in% genes_focus,]
 
 library(pheatmap)
-pdf("/data/riazlab/projects/TCRseq/output/Fig5d.v00.pdf")
+pdf("/data/lab/projects/TCRseq/output/Fig5d.v00.pdf")
 pheatmap(clusters[,c(2,3,4,5)], scale = "column",
          cluster_rows = F, cluster_cols = T,
          show_rownames = T
@@ -164,7 +164,7 @@ head(c1_c4)
 genes.to.label = c("Isg15","Ifit3","Gbp7","Usp18","Irf7","Irf1","Gbp4","Gbp2","Stat1")
 library(ggplot2)
 library(cowplot)
-pdf("/data/riazlab/projects/TCRseq/output/scatter.v00.pdf")
+pdf("/data/lab/projects/TCRseq/output/scatter.v00.pdf")
 p1 <- ggplot(clusters, aes(c1, c4)) + geom_point() + ggtitle("Comapre Cluster_1 and Cluster_4")
 p1 <- LabelPoints(plot = p1, points = genes.to.label, repel = TRUE)
 p1 
